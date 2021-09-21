@@ -8,8 +8,11 @@ namespace NEAT_Attempt
     {
         List<ConnectionGene> connections;
         List<NodeGene> nodes;
-        int fitness = 0;
+        float fitness = 0.0f;
         const double PROBABILITY_PERTURBING = 0.8;
+        const float C1 = 1.0f;
+        const float C2 = 1.0f;
+        const float C3 = 1.0f;
 
         public Genome()
         {
@@ -19,6 +22,7 @@ namespace NEAT_Attempt
 
         public List<ConnectionGene> Connections { get { return connections; } }
         public List<NodeGene> Nodes { get { return nodes; } }
+        public float Fitness { get { return fitness; } set { fitness = value; } }
 
         public void AddNode(NodeGene pNode)
         {
@@ -32,8 +36,6 @@ namespace NEAT_Attempt
                 AddNode(pNode);
             }
         }
-
-        public int Fitness { get { return fitness; } set { fitness = value; } }
 
         public void AddConnection(ConnectionGene pConnection)
         { //Could insert by inno number here, try that out after tutorial, might auto-line up for crossover
@@ -137,6 +139,66 @@ namespace NEAT_Attempt
             AddNodesToChild(child, mostFit, leastFit, sameFitness, largestInnovation);
             AddConnectionGenesToChild(child, mostFit, leastFit, sameFitness, largestInnovation);
             return child;
+        }
+
+        public static float CompareGenes(Genome parent1, Genome parent2)
+        {
+            int matchingGenes = 0;
+            int disjointGenes = 0;
+            int excessGenes = 0;
+            float weightOfMatchingGenes = 0;
+            List<ConnectionGene> p1 = parent1.Connections;
+            List<ConnectionGene> p2 = parent2.Connections;
+            int highestInnovation = p1.Count > p2.Count ? p1.Count - 1 : p2.Count - 1;
+            for (int i = 0; i < highestInnovation; i++)
+            {
+                try { bool t = p1[i] == null; }
+                catch { for (int j = i; j < p2.Count; j++) { excessGenes++; } break; }
+                try { bool t = p2[i] == null; }
+                catch { for (int j = i; j < p1.Count; j++) { excessGenes++; } break; }
+                if (p1[i] == null && p2[i] == null) continue;
+                if (p1[i] != null && p2[i] == null)
+                {
+                    if (NullList(p2, i))
+                    {
+                        excessGenes++;
+                        continue;
+                    }
+                    disjointGenes++;
+                    continue;
+                }
+                if (p1[i] == null && p2[i] != null)
+                {
+                    if (NullList(p1, i))
+                    {
+                        excessGenes++;
+                        continue;
+                    }
+                    disjointGenes++;
+                    continue;
+                }
+                if (p1[i].InnovationNumber == p2[i].InnovationNumber)
+                {
+                    weightOfMatchingGenes += (p1[i].Weight + p2[i].Weight) / 2;
+                    matchingGenes++;
+                    continue;
+                }
+            }
+            //Console.WriteLine("Matching Genes: " + matchingGenes);
+            //Console.WriteLine("Avg Weight Diff: " + weightOfMatchingGenes / matchingGenes);
+            //Console.WriteLine("Excess Genes: " + excessGenes);
+            //Console.WriteLine("Disjoint Genes: " + disjointGenes);
+            return C1*excessGenes + C2*disjointGenes + C3*(weightOfMatchingGenes / matchingGenes);
+        }
+
+        private static bool NullList(List<ConnectionGene> p1, int i)
+        {
+            for (int j = i; j < p1.Count; j++)
+            {
+                if (p1[j] != null)
+                    return false;
+            }
+            return true;
         }
 
         private static void AddNodesToChild(Genome child, Genome mostFit, Genome leastFit, bool sameFitness, int largestInnovation)
