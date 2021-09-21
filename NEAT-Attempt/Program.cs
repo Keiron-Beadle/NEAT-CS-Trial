@@ -6,6 +6,12 @@ namespace NEAT_Attempt
     {
         static void Main(string[] args)
         {
+            TestCrossover();
+
+        }
+
+        private static void TestConnectionMutation()
+        {
             InnovationGen innovator = new InnovationGen();
             Random r = new Random();
             Genome genome = new Genome();
@@ -17,13 +23,13 @@ namespace NEAT_Attempt
             genome.AddNode(input2);
             genome.AddNode(output1);
 
-            genome.AddConnection(new ConnectionGene(0,2,0.5f,true, innovator.Innovation));
-            genome.AddConnection(new ConnectionGene(1,2,1.0f,true, innovator.Innovation));
+            genome.AddConnection(new ConnectionGene(0, 2, 0.5f, true, innovator.Innovation));
+            genome.AddConnection(new ConnectionGene(1, 2, 1.0f, true, innovator.Innovation));
 
             print(genome);
-            genome.NodeMutation(r, innovator);
+            //genome.NodeMutation(r, innovator);
+            genome.ConnectionMutation(r, innovator);
             print(genome);
-
         }
 
         static void TestCrossover()
@@ -34,6 +40,7 @@ namespace NEAT_Attempt
                 NodeGene gene = new NodeGene(NodeGene.TYPE.INPUT, i);
                 p1.AddNode(gene);
             }
+            p1.Fitness = 10;
             p1.AddNode(new NodeGene(NodeGene.TYPE.OUTPUT, 3));
             p1.AddNode(new NodeGene(NodeGene.TYPE.HIDDEN, 4));
 

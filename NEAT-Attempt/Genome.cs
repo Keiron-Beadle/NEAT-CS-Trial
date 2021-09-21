@@ -9,6 +9,7 @@ namespace NEAT_Attempt
         List<ConnectionGene> connections;
         List<NodeGene> nodes;
         int fitness = 0;
+        const double PROBABILITY_PERTURBING = 0.8;
 
         public Genome()
         {
@@ -47,11 +48,31 @@ namespace NEAT_Attempt
             }
         }
 
+        public void MutateWeights(Random r)
+        {
+            for (int i = 0; i < Connections.Count; i++)
+            {
+                if (r.NextDouble() < PROBABILITY_PERTURBING)
+                {
+                    Connections[i].Weight = Connections[i].Weight * (float)(r.NextDouble() * 4.0f - 2.0f);
+                }
+                else
+                {
+                    Connections[i].Weight = (float)r.NextDouble() * 4.0f-2.0f;
+                }
+            }
+        }
+
         public void ConnectionMutation(Random r, InnovationGen innovator)
         {
             NodeGene n1 = nodes[r.Next(0, nodes.Count)];
             NodeGene n2 = nodes[r.Next(0, nodes.Count)];
             bool reversedConnection = false;
+            if (n1.Type == NodeGene.TYPE.INPUT && n2.Type == NodeGene.TYPE.INPUT || n1.ID == n2.ID)
+            {
+                //Should not have Inputs connecting to Inputs or same nodes connecting to same nodes
+                return;
+            }
             if (n1.Type == NodeGene.TYPE.HIDDEN && n2.Type == NodeGene.TYPE.INPUT) reversedConnection = true;
             else if (n1.Type == NodeGene.TYPE.OUTPUT && n2.Type == NodeGene.TYPE.HIDDEN) reversedConnection = true;
             else if (n1.Type == NodeGene.TYPE.OUTPUT && n2.Type == NodeGene.TYPE.INPUT) reversedConnection = true;
@@ -109,7 +130,10 @@ namespace NEAT_Attempt
             bool sameFitness = parent1.Fitness == parent2.Fitness; //Need to know whether same fitness to discard/allow disjoint/excess genes
             int parent1LastInnovation = parent1.Connections[parent1.Connections.Count - 1].InnovationNumber;
             int parent2LastInnovation = parent2.Connections[parent2.Connections.Count - 1].InnovationNumber;
-            int largestInnovation = parent1LastInnovation > parent2LastInnovation ? parent1LastInnovation : parent2LastInnovation;
+            int largestInnovation;
+            if (parent1.Fitness > parent2.Fitness) largestInnovation = parent1LastInnovation;
+            else if (parent2.Fitness > parent1.Fitness) largestInnovation = parent2LastInnovation;
+            else { largestInnovation = parent1LastInnovation > parent2LastInnovation ? parent1LastInnovation : parent2LastInnovation; }
             AddNodesToChild(child, mostFit, leastFit, sameFitness, largestInnovation);
             AddConnectionGenesToChild(child, mostFit, leastFit, sameFitness, largestInnovation);
             return child;
@@ -145,7 +169,16 @@ namespace NEAT_Attempt
             {
                 if (mostFit.Connections[i] != null && !sameFitness)
                 {
-                    ConnectionGene c = mostFit.Connections[i];
+                    ConnectionGene c = mostFit.Connections[i]; //If only fit parent has this gene, inherit it, else,
+                    if (leastFit.Connections[i] != null) //We need to check if parent2 has this gene, if so
+                    {
+                        Random rnd = new Random();
+                        int rand = rnd.Next(0, 2); //inherit matching gene randomly
+                        if (rand == 1)
+                        {
+                            c = leastFit.Connections[i];
+                        }
+                    }
                     child.AddConnection(new ConnectionGene(c.InNode, c.OutNode, c.Weight, c.IsActivated, c.InnovationNumber));
                     continue;
                 }
