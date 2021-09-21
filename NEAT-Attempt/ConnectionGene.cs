@@ -25,10 +25,9 @@ namespace NEAT_Attempt
         {
             bool sameIn = inNode == pTrialGene.InNode;
             bool sameOut = outNode == pTrialGene.OutNode;
-            bool sameWeight = weight == pTrialGene.Weight;
             bool sameInno = innovationNum == pTrialGene.InnovationNumber;
             bool sameActivation = isActivated == pTrialGene.IsActivated;
-            if (sameIn && sameOut && sameWeight && sameInno)
+            if (sameIn && sameOut && sameInno)
             {
                 if (sameActivation)
                     return 0; //Means same activation on both parents

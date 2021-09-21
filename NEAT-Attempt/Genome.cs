@@ -9,7 +9,6 @@ namespace NEAT_Attempt
         List<ConnectionGene> connections;
         List<NodeGene> nodes;
         int fitness = 0;
-        int Innovation_Number = 0;
 
         public Genome()
         {
@@ -48,7 +47,7 @@ namespace NEAT_Attempt
             }
         }
 
-        public void ConnectionMutation(Random r)
+        public void ConnectionMutation(Random r, InnovationGen innovator)
         {
             NodeGene n1 = nodes[r.Next(0, nodes.Count)];
             NodeGene n2 = nodes[r.Next(0, nodes.Count)];
@@ -80,25 +79,23 @@ namespace NEAT_Attempt
             }
 
             if (connectionExists)
-                ConnectionMutation(r);
+                ConnectionMutation(r, innovator);
             else
             {
                 float weight = (float)r.NextDouble() * 2.0f - 1.0f;
-                Innovation_Number++;
-                connections.Add(new ConnectionGene(n1.ID, n2.ID, weight, true, Innovation_Number));
+                connections.Add(new ConnectionGene(n1.ID, n2.ID, weight, true, innovator.Innovation));
             }
         }
 
-        public void NodeMutation(Random r)
+        public void NodeMutation(Random r, InnovationGen innovator)
         {
             ConnectionGene con = connections[r.Next(0, connections.Count)];
             NodeGene n1 = nodes[con.InNode];
             NodeGene n2 = nodes[con.OutNode];
             con.IsActivated = false;
-            NodeGene temp = new NodeGene(NodeGene.TYPE.HIDDEN, connections.Count);
-            Innovation_Number++;
-            ConnectionGene inToNew = new ConnectionGene(n1.ID, temp.ID, 1.0f, true, Innovation_Number);
-            ConnectionGene newToOut = new ConnectionGene(temp.ID, n2.ID, con.Weight, true, Innovation_Number);
+            NodeGene temp = new NodeGene(NodeGene.TYPE.HIDDEN, nodes.Count);
+            ConnectionGene inToNew = new ConnectionGene(n1.ID, temp.ID, 1.0f, true, innovator.Innovation);
+            ConnectionGene newToOut = new ConnectionGene(temp.ID, n2.ID, con.Weight, true, innovator.Innovation);
             nodes.Add(temp);
             connections.Add(inToNew);
             connections.Add(newToOut);
