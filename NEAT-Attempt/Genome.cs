@@ -46,7 +46,6 @@ namespace NEAT_Attempt
                 connections.Add(null);
                 AddConnection(pConnection);
             }
-            //connections.Add(pConnection);
         }
 
         public void ConnectionMutation(Random r)
