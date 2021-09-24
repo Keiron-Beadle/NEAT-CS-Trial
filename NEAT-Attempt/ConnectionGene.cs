@@ -21,6 +21,15 @@ namespace NEAT_Attempt
             innovationNum = pInnoNum;
         }
 
+        public ConnectionGene(ConnectionGene pCopy)
+        {
+            this.inNode = pCopy.inNode;
+            this.outNode = pCopy.outNode;
+            this.weight = pCopy.weight;
+            this.isActivated = pCopy.isActivated;
+            this.innovationNum = pCopy.innovationNum;
+        }
+
         public int IsSame(ConnectionGene pTrialGene)
         {
             bool sameIn = inNode == pTrialGene.InNode;

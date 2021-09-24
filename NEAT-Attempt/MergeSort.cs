@@ -6,41 +6,41 @@ namespace NEAT_Attempt
 {
     class MergeSort
     {
-        public static List<Genome> Sort(ref List<Genome> pGenomes)
+        public static Genome[] Sort(Genome[] pGenomes)
         {
-            List<Genome> left;
-            List<Genome> right;
-            List<Genome> result = new List<Genome>(pGenomes.Count);
-            if (pGenomes.Count <= 1)
+            Genome[] left;
+            Genome[] right;
+            Genome[] result = new Genome[pGenomes.Length];
+            if (pGenomes.Length <= 1)
                 return pGenomes;
-            int mp = pGenomes.Count / 2;
-            left = new List<Genome>(mp);
-            if (pGenomes.Count % 2 == 0)
-                right = new List<Genome>(mp);
+            int mp = pGenomes.Length / 2;
+            left = new Genome[mp];
+            if (pGenomes.Length % 2 == 0)
+                right = new Genome[mp];
             else
-                right = new List<Genome>(mp+1);
+                right = new Genome[mp+1];
             for (int i = 0; i < mp; i++)
                 left[i] = pGenomes[i];
             int x = 0;
-            for (int i = mp; i < pGenomes.Count; i++)
+            for (int i = mp; i < pGenomes.Length; i++)
             {
                 right[x] = pGenomes[i];
                 x++;
             }
-            left = Sort(ref left);
-            right = Sort(ref right);
-            result = Merge(ref left, ref right);
+            left = Sort(left);
+            right = Sort(right);
+            result = Merge(left, right);
             return result;
         }
 
-        public static List<Genome> Merge(ref List<Genome> left, ref List<Genome> right)
+        public static Genome[] Merge(Genome[] left, Genome[] right)
         {
-            int resultLength = right.Count + left.Count;
-            List<Genome> result = new List<Genome>(resultLength);
+            int resultLength = right.Length + left.Length;
+            Genome[] result = new Genome[resultLength];
             int indexLeft = 0, indexRight = 0, indexResult = 0;
-            while (indexLeft < left.Count || indexRight < right.Count)
+            while (indexLeft < left.Length || indexRight < right.Length)
             {
-                if (indexLeft < left.Count && indexRight < right.Count)
+                if (indexLeft < left.Length && indexRight < right.Length)
                 {
                     if (left[indexLeft].Fitness <= right[indexRight].Fitness)
                     {
@@ -55,13 +55,13 @@ namespace NEAT_Attempt
                         indexResult++;
                     }
                 }
-                else if (indexLeft < left.Count)
+                else if (indexLeft < left.Length)
                 {
                     result[indexResult] = left[indexLeft];
                     indexLeft++;
                     indexResult++;
                 }
-                else if (indexRight < right.Count)
+                else if (indexRight < right.Length)
                 {
                     result[indexResult] = right[indexRight];
                     indexRight++;
