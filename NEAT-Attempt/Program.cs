@@ -6,10 +6,35 @@ namespace NEAT_Attempt
     {
         static void Main(string[] args)
         {
-            TestForConnections();
+
         }
 
-        private static void TestForConnections()
+        private static void TestForLowConnections()
+        {
+            InnovationGen innovator = new InnovationGen();
+            Genome start = new Genome();
+            start.AddNode(new NodeGene(NodeGene.TYPE.INPUT, 0));
+            start.AddNode(new NodeGene(NodeGene.TYPE.INPUT, 1));
+            start.AddNode(new NodeGene(NodeGene.TYPE.OUTPUT, 2));
+            start.AddConnection(0, 2, 0.5f, true, innovator);
+            start.AddConnection(1, 2, 0.5f, true, innovator);
+            BasicEvaluator eval = new BasicEvaluator(150, start, innovator);
+            for (int i = 0; i < 100; i++)
+            {
+                eval.Evaluate();
+                Console.Write("Generation: " + i + ' ');
+                Console.Write("Connections in Highest: " + eval.FittestGenome + ' ');
+                Console.WriteLine("Number of Species: " + eval.NumberOfSpecies);
+                // if (i % 10 == 0)
+                // {
+                //     Console.WriteLine();
+                //print(eval.FittestGenome);
+                //      Console.WriteLine();
+                // }
+            }
+        }
+
+        private static void TestForHighConnections()
         {
             InnovationGen innovator = new InnovationGen();
             Genome start = new Genome();

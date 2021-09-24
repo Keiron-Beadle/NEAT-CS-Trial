@@ -14,7 +14,7 @@ namespace NEAT_Attempt
         private List<Species> species;
         private InnovationGen connectionInnovator;
 
-        private const float MAX_GENETIC_DIFF = 2.3f;
+        private const float MAX_GENETIC_DIFF = 3.0f;
         private const float MUTATION_RATE = 0.8f;
         private const float ADD_CONNECTION_RATE = 0.05f;
         private const float ADD_NODE_RATE = 0.03f;
@@ -68,7 +68,7 @@ namespace NEAT_Attempt
         {
             for (int i = 0; i < species.Count; i++)
             {
-                if (species[i].members.Count == 0)
+                if (species[i].members.Count <= 1)
                 {
                     species.RemoveAt(i);
                     i--;
